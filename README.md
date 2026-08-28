@@ -19,7 +19,7 @@ streamlit run app.py
 ## Demo flow
 
 - **One vehicle is noisy**：单次 crossing 的原始加速度与 PSD，明确显示证据不足。
-- **The bridge emerges from the crowd**：1/5/10/20/30/50 次 crossing 的 KDE / consensus fingerprint 与 convergence 曲线。
+- **The bridge emerges from the crowd**：1/5/10/20/50/100 次 crossing 的 KDE / consensus fingerprint 与 convergence 曲线。
 - **Baseline vs Current**：默认 7.8 Hz baseline 对比 7.2 Hz current，使用 baseline 内部 bootstrap 的 95th percentile Jensen–Shannon divergence threshold。
 - 点击侧边栏 **Run QianPulse Demo** 可播放一键 replay。
 
