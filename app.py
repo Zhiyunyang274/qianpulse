@@ -28,74 +28,85 @@ st.markdown(
     """
     <style>
     :root {
-        --bg:#05080d; --surface:#091019; --surface2:#0c151f; --line:#182633;
-        --text:#eef4f6; --muted:#708493; --soft:#a6b5be;
-        --cyan:#4de1cd; --cyan2:#1baea1; --amber:#eab661; --red:#ff6373;
+        --paper:#f0ede4; --paper-deep:#e6e1d5; --ink:#202624; --muted:#737a74;
+        --rule:#c8c3b7; --indigo:#142438; --indigo-2:#1b3048; --silver:#b9c1c2;
+        --qian-red:#a13e35; --moss:#678176; --ochre:#b58d56;
     }
-    html, body, [class*="css"] { font-family: Inter, "PingFang SC", "Microsoft YaHei", sans-serif; }
-    .stApp {
-        color:var(--text);
-        background:
-            radial-gradient(circle at 78% 2%, rgba(38,118,115,.13), transparent 29%),
-            radial-gradient(circle at 18% 44%, rgba(22,66,87,.10), transparent 25%),
-            var(--bg);
-    }
+    html, body, [class*="css"] { font-family:"PingFang SC","Microsoft YaHei",sans-serif; }
+    .stApp { background:var(--paper); color:var(--ink); }
     [data-testid="stHeader"], [data-testid="stToolbar"], #MainMenu, footer { display:none !important; }
-    .block-container { max-width:1280px; padding:1.7rem 2.2rem 5rem; }
-    div[data-testid="stPopover"] button {
-        border:1px solid #233442; background:rgba(10,18,27,.86); color:#c4d0d6;
-        border-radius:999px; min-height:36px; padding:0 16px; font-size:.76rem;
-    }
-    div[data-testid="stPopover"] button:hover { border-color:#477064; color:#fff; }
+    .block-container { max-width:1240px; padding:1.55rem 2rem 5rem; }
     div[data-testid="stPlotlyChart"] { margin:0; }
-    .masthead { display:flex; align-items:center; gap:13px; padding:2px 0 5px; }
-    .logo-mark { display:flex; align-items:flex-end; gap:3px; width:24px; height:23px; }
-    .logo-mark i { width:3px; border-radius:3px; background:var(--cyan); display:block; box-shadow:0 0 14px rgba(77,225,205,.25); }
-    .logo-mark i:nth-child(1), .logo-mark i:nth-child(5) { height:8px; opacity:.45; }
-    .logo-mark i:nth-child(2), .logo-mark i:nth-child(4) { height:15px; opacity:.7; }
-    .logo-mark i:nth-child(3) { height:23px; }
-    .brand-cn { font-size:1.22rem; font-weight:800; letter-spacing:.17em; }
-    .brand-en { color:var(--cyan); font-size:.61rem; font-weight:750; letter-spacing:.24em; margin-left:2px; }
-    .mode-chip { display:inline-flex; align-items:center; gap:7px; color:#8497a4; font-size:.68rem; white-space:nowrap; padding-top:8px; }
-    .mode-chip b { width:6px; height:6px; display:inline-block; border-radius:50%; background:var(--cyan); box-shadow:0 0 10px rgba(77,225,205,.65); }
-    .hairline { height:1px; background:linear-gradient(90deg,var(--line),transparent); margin:12px 0 27px; }
-    .hero-copy { padding:28px 8px 10px 0; min-height:365px; display:flex; flex-direction:column; justify-content:center; }
-    .overline { color:#6d8492; font-size:.64rem; font-weight:750; letter-spacing:.19em; margin-bottom:16px; }
-    .hero-title { color:var(--text); font-size:1.86rem; font-weight:680; letter-spacing:.035em; line-height:1.25; margin-bottom:18px; }
-    .hero-shift { font-size:3.55rem; line-height:1; font-weight:720; letter-spacing:-.04em; color:var(--red); }
-    .hero-unit { color:#a0afb8; font-size:.84rem; margin-left:8px; letter-spacing:.02em; }
-    .hero-detail { color:#8194a1; font-size:.76rem; line-height:1.8; margin-top:20px; max-width:340px; }
-    .hero-action { color:#e6edef; font-size:.76rem; margin-top:19px; padding-left:12px; border-left:2px solid var(--red); }
-    .plot-label { color:#8fa0aa; font-size:.66rem; font-weight:650; letter-spacing:.1em; margin:2px 0 -10px; position:relative; z-index:2; }
-    .kpi-strip { display:grid; grid-template-columns:repeat(5,1fr); border-top:1px solid var(--line); border-bottom:1px solid var(--line); margin:7px 0 50px; }
-    .kpi { padding:16px 18px 15px 0; margin-right:18px; border-right:1px solid var(--line); }
-    .kpi:last-child { border-right:0; margin-right:0; }
-    .kpi-label { color:#647887; font-size:.64rem; letter-spacing:.08em; margin-bottom:8px; }
-    .kpi-value { color:#e9f0f3; font-size:1.24rem; font-weight:660; }
-    .kpi-value em { color:#8495a0; font-size:.67rem; font-style:normal; margin-left:4px; }
-    .kpi-note { color:#4f6573; font-size:.61rem; margin-top:5px; }
-    .story-head { display:flex; align-items:flex-end; justify-content:space-between; gap:28px; margin:46px 0 18px; }
-    .story-index { color:var(--cyan); font-size:.6rem; font-weight:800; letter-spacing:.22em; margin-bottom:7px; }
-    .story-title { font-size:1.12rem; font-weight:680; letter-spacing:.035em; }
-    .story-copy { color:#718492; font-size:.72rem; line-height:1.75; max-width:560px; text-align:right; }
-    .chart-shell { border-top:1px solid var(--line); padding-top:14px; }
-    .decision { min-height:320px; background:linear-gradient(145deg,rgba(19,29,40,.82),rgba(8,14,21,.76)); border:1px solid var(--line); padding:27px 28px; display:flex; flex-direction:column; justify-content:center; }
-    .decision-label { color:#687d8b; font-size:.62rem; letter-spacing:.16em; margin-bottom:19px; }
-    .decision-title { font-size:1.34rem; font-weight:680; margin-bottom:20px; }
-    .decision-row { display:flex; align-items:baseline; justify-content:space-between; border-top:1px solid var(--line); padding:12px 0; color:#7e919e; font-size:.7rem; }
-    .decision-row strong { color:#edf3f5; font-size:.92rem; font-weight:650; }
-    .decision-rec { margin-top:21px; color:#e8edef; font-size:.74rem; padding-left:12px; border-left:2px solid var(--red); }
-    .boundary { color:#506573; border-top:1px solid var(--line); margin-top:50px; padding-top:14px; font-size:.67rem; line-height:1.8; }
-    [data-testid="stFileUploaderDropzone"] { background:#09111a; border-color:#22333f; }
-    [data-baseweb="popover"] { background:#0b131c !important; border:1px solid #233442 !important; }
-    [data-baseweb="input"], [data-baseweb="base-input"], input { background:#091019 !important; }
-    .stButton button[kind="primary"] { background:var(--cyan); color:#03100e; border:0; font-weight:750; }
-    .stButton button[kind="primary"] p { color:#03100e !important; }
+    div[data-testid="stPopover"] button {
+        border:1px solid var(--rule); background:transparent; color:#505854; border-radius:0;
+        min-height:34px; padding:0 13px; font-size:.72rem; box-shadow:none;
+    }
+    div[data-testid="stPopover"] button:hover { border-color:var(--indigo); color:var(--indigo); }
+    [data-baseweb="popover"] { background:#f7f4ed !important; border:1px solid var(--rule) !important; color:var(--ink) !important; }
+    [data-baseweb="input"], [data-baseweb="base-input"], input { background:#e7e2d7 !important; color:var(--ink) !important; }
+    [data-testid="stFileUploaderDropzone"] { background:#e7e2d7; border-color:var(--rule); }
+    .stButton button[kind="primary"] { background:var(--qian-red); color:white; border:0; border-radius:0; font-weight:650; }
+    .stButton button[kind="primary"] p { color:white !important; }
+
+    .mast { display:grid; grid-template-columns:auto 1fr auto; align-items:center; gap:18px; padding:2px 0 13px; border-bottom:1px solid var(--rule); }
+    .seal { width:34px; height:34px; background:var(--qian-red); color:#f4efe4; display:grid; place-items:center; font-family:"Songti SC","STSong",serif; font-size:1rem; }
+    .brand-line { display:flex; align-items:baseline; gap:10px; }
+    .brand-cn { font-family:"Songti SC","STSong",serif; font-size:1.24rem; font-weight:700; letter-spacing:.15em; }
+    .brand-en { font-family:Georgia,serif; color:#626b66; font-size:.6rem; letter-spacing:.2em; }
+    .mast-meta { color:#777e78; font-size:.66rem; margin-top:3px; }
+    .run-meta { text-align:right; color:#737a75; font-size:.65rem; line-height:1.7; }
+
+    .bridge-plate { background:var(--indigo); color:#edf0eb; margin-top:22px; display:grid; grid-template-columns:220px 1fr 220px; min-height:340px; overflow:hidden; }
+    .bridge-file { padding:26px 24px; border-right:1px solid rgba(198,207,207,.18); display:flex; flex-direction:column; justify-content:space-between; }
+    .file-no { color:#91a1a6; font-family:Georgia,serif; font-size:.65rem; letter-spacing:.13em; }
+    .file-title { font-family:"Songti SC","STSong",serif; font-size:1.42rem; line-height:1.45; margin-top:13px; }
+    .file-sub { color:#9da9aa; font-size:.67rem; line-height:1.8; margin-top:10px; }
+    .file-table { border-top:1px solid rgba(198,207,207,.2); margin-top:28px; }
+    .file-row { display:flex; justify-content:space-between; border-bottom:1px solid rgba(198,207,207,.14); padding:8px 0; font-size:.63rem; color:#98a4a5; }
+    .file-row b { color:#e0e5e1; font-weight:500; }
+    .bridge-art { position:relative; min-height:340px; }
+    .bridge-art svg { width:100%; height:100%; display:block; }
+    .bridge-result { padding:26px 24px; border-left:1px solid rgba(198,207,207,.18); display:flex; flex-direction:column; justify-content:center; }
+    .result-kicker { color:#9aa6a7; font-size:.62rem; letter-spacing:.08em; }
+    .result-title { font-family:"Songti SC","STSong",serif; font-size:1.32rem; line-height:1.4; margin:12px 0 20px; }
+    .result-shift { color:#e0786f; font-family:Georgia,serif; font-size:2.5rem; line-height:1; }
+    .result-shift span { color:#9eabad; font-family:"PingFang SC",sans-serif; font-size:.65rem; margin-left:4px; }
+    .result-rule { height:1px; background:rgba(198,207,207,.2); margin:20px 0 15px; }
+    .result-note { color:#aeb8b8; font-size:.66rem; line-height:1.85; }
+    .result-action { border-left:3px solid #d36b62; padding-left:10px; color:#edf0eb; font-size:.68rem; line-height:1.6; margin-top:18px; }
+
+    .crowd-ribbon { display:grid; grid-template-columns:145px repeat(5,1fr); border:1px solid var(--rule); border-top:0; min-height:124px; }
+    .ribbon-intro { padding:18px 17px; background:var(--paper-deep); border-right:1px solid var(--rule); }
+    .ribbon-title { font-family:"Songti SC","STSong",serif; font-weight:700; font-size:.88rem; line-height:1.45; }
+    .ribbon-copy { color:#7a817c; font-size:.61rem; line-height:1.55; margin-top:8px; }
+    .pulse-stage { position:relative; padding:13px 12px 9px; border-right:1px solid var(--rule); }
+    .pulse-stage:last-child { border-right:0; }
+    .pulse-stage svg { width:100%; height:55px; display:block; }
+    .stage-top { display:flex; justify-content:space-between; color:#727a75; font-size:.59rem; }
+    .stage-n { color:var(--ink); font-family:Georgia,serif; font-size:.84rem; }
+    .stage-note { color:#8b918d; font-size:.56rem; margin-top:3px; }
+
+    .brief-head { display:grid; grid-template-columns:75px 250px 1fr; align-items:end; gap:16px; margin:48px 0 14px; padding-bottom:11px; border-bottom:1px solid var(--rule); }
+    .brief-no { color:var(--qian-red); font-family:Georgia,serif; font-size:.73rem; }
+    .brief-title { font-family:"Songti SC","STSong",serif; font-size:1.13rem; font-weight:700; }
+    .brief-copy { color:#767d78; font-size:.68rem; line-height:1.7; text-align:right; }
+    .chart-caption { color:#5f6762; font-size:.66rem; font-weight:600; margin:2px 0 -8px; }
+    .side-note { background:var(--paper-deep); border-top:3px solid var(--indigo); padding:20px 21px; min-height:300px; }
+    .side-label { color:#747c77; font-size:.61rem; letter-spacing:.06em; }
+    .side-title { font-family:"Songti SC","STSong",serif; font-size:1.13rem; font-weight:700; margin:13px 0 18px; line-height:1.45; }
+    .side-row { display:flex; justify-content:space-between; align-items:baseline; padding:9px 0; border-top:1px solid var(--rule); color:#747c77; font-size:.65rem; }
+    .side-row strong { color:var(--ink); font-family:Georgia,serif; font-size:.86rem; font-weight:500; }
+    .side-action { color:var(--qian-red); font-size:.68rem; line-height:1.65; padding-left:10px; border-left:3px solid var(--qian-red); margin-top:18px; }
+    .method-boundary { margin-top:48px; padding-top:13px; border-top:1px solid var(--rule); color:#777e78; font-size:.64rem; line-height:1.8; }
     @media(max-width:900px) {
-        .block-container { padding:1.2rem 1rem 3rem; }
-        .kpi-strip { grid-template-columns:repeat(2,1fr); }
-        .story-copy { display:none; }
-        .hero-copy { min-height:auto; padding-top:15px; }
+        .block-container { padding:1rem; }
+        .bridge-plate { grid-template-columns:1fr; }
+        .bridge-file, .bridge-result { border:0; }
+        .bridge-art { min-height:260px; }
+        .crowd-ribbon { grid-template-columns:1fr; }
+        .pulse-stage, .ribbon-intro { border-right:0; border-bottom:1px solid var(--rule); }
+        .brief-head { grid-template-columns:45px 1fr; }
+        .brief-copy { display:none; }
     }
     </style>
     """,
@@ -111,40 +122,49 @@ def demo_data(seed, baseline_f, current_f):
     )
 
 
-def layout(height=320, show_y=True):
+def chart_layout(height=300, show_y=True):
     return dict(
         height=height,
         paper_bgcolor="rgba(0,0,0,0)",
         plot_bgcolor="rgba(0,0,0,0)",
-        font=dict(family='Inter, "PingFang SC", sans-serif', color="#708493", size=10),
-        margin=dict(l=42 if show_y else 14, r=15, t=31, b=38),
+        font=dict(family='"PingFang SC",sans-serif', color="#717873", size=10),
+        margin=dict(l=44 if show_y else 16, r=16, t=30, b=40),
         hovermode="x unified",
-        legend=dict(orientation="h", y=1.11, x=0, font=dict(size=10), bgcolor="rgba(0,0,0,0)"),
-        xaxis=dict(showgrid=False, zeroline=False, linecolor="#20313e", tickcolor="#20313e"),
-        yaxis=dict(showgrid=True, showticklabels=show_y, gridcolor="#14212c", zeroline=False, linecolor="#20313e"),
+        legend=dict(orientation="h", y=1.1, x=0, font=dict(size=10), bgcolor="rgba(0,0,0,0)"),
+        xaxis=dict(showgrid=False, zeroline=False, linecolor="#bbb7ac", tickcolor="#bbb7ac"),
+        yaxis=dict(showgrid=True, showticklabels=show_y, gridcolor="#d9d5ca", zeroline=False, linecolor="#bbb7ac"),
     )
 
 
-def show(fig):
+def show_chart(fig):
     st.plotly_chart(fig, use_container_width=True, config={"displayModeBar": False, "scrollZoom": False})
 
 
-def story(index, title, copy):
+def brief_head(number, title, copy):
     st.markdown(
-        f'<div class="story-head"><div><div class="story-index">{index}</div><div class="story-title">{title}</div></div>'
-        f'<div class="story-copy">{copy}</div></div>',
-        unsafe_allow_html=True,
+        f'<div class="brief-head"><div class="brief-no">{number}</div><div class="brief-title">{title}</div>'
+        f'<div class="brief-copy">{copy}</div></div>', unsafe_allow_html=True,
     )
 
 
-top_brand, top_mode, top_settings = st.columns([7, 1.5, 1.1], vertical_alignment="center")
-with top_brand:
+def svg_path(values, width=140, height=55, pad=5):
+    values = np.asarray(values, dtype=float)
+    if not len(values) or np.max(values) <= 0:
+        return ""
+    xs = np.linspace(pad, width - pad, len(values))
+    ys = height - pad - (values / np.max(values)) * (height - 2 * pad)
+    return "M " + " L ".join(f"{x:.1f},{y:.1f}" for x, y in zip(xs, ys))
+
+
+brand_col, state_col, settings_col = st.columns([7, 1.45, 1.05], vertical_alignment="center")
+with brand_col:
     st.markdown(
-        '<div class="masthead"><span class="logo-mark"><i></i><i></i><i></i><i></i><i></i></span>'
-        '<span class="brand-cn">黔脉</span><span class="brand-en">QIANPULSE</span></div>',
+        '<div class="mast"><div class="seal">黔</div><div><div class="brand-line">'
+        '<span class="brand-cn">黔脉</span><span class="brand-en">QIANPULSE</span></div>'
+        '<div class="mast-meta">贵州山地桥梁移动感知 · 演示档案 QP-01</div></div></div>',
         unsafe_allow_html=True,
     )
-with top_settings:
+with settings_col:
     with st.popover("演示设置"):
         mode = st.radio("数据源", ["模拟演示", "Sensor Logger"], horizontal=True)
         baseline_f = st.slider("基线频率 / Hz", 5.0, 10.0, 7.8, 0.1)
@@ -155,8 +175,8 @@ with top_settings:
         upload = st.file_uploader("导入 CSV / ZIP", type=["csv", "zip"]) if mode == "Sensor Logger" else None
 
 if replay:
-    progress = st.progress(0, text="正在读取单次穿越信号")
-    for pct, label in [(18, "正在读取单次穿越信号"), (46, "正在融合多车辆频谱"), (72, "正在估计基线自然波动"), (100, "正在完成当前状态筛查")]:
+    progress = st.progress(0, text="读取车辆穿越信号")
+    for pct, label in [(20, "读取车辆穿越信号"), (48, "聚合车群频谱"), (74, "建立桥梁自身基线"), (100, "完成响应偏移筛查")]:
         progress.progress(pct, text=label)
         time.sleep(.17)
     progress.empty()
@@ -182,117 +202,127 @@ threshold = boot["threshold95"]
 divergence = fingerprint_divergence(base_fp["fingerprint"], current_fp["fingerprint"])
 shift_hz = current_fp["dominant_frequency"] - base_fp["dominant_frequency"]
 is_shift = bool(np.isfinite(threshold) and divergence > threshold and abs(current_f - baseline_f) >= .2)
-counts = [1, 5, 10, 20, 30, 50]
-conv = convergence_curve(baseline_all, counts=counts, seed=int(seed) + 11)
+sample_counts = [1, 5, 10, 20, 50]
+conv = convergence_curve(baseline_all, counts=[1, 5, 10, 20, 30, 50], seed=int(seed) + 11)
 stability = min(conv, key=lambda item: abs(item["n"] - count))["stability"] * 100
 
-with top_mode:
-    st.markdown(f'<div class="mode-chip"><b></b>{data_note} · 本机分析</div>', unsafe_allow_html=True)
-st.markdown('<div class="hairline"></div>', unsafe_allow_html=True)
+with state_col:
+    st.markdown(f'<div class="run-meta">{data_note}<br>本机离线分析</div>', unsafe_allow_html=True)
 
-hero_copy, hero_plot = st.columns([.72, 1.55], gap="large")
-with hero_copy:
-    title = "检测到响应偏移" if is_shift else "响应处于基线范围"
-    action = "建议优先安排专业工程检查" if is_shift else "继续纳入常态化采集"
-    st.markdown(
-        f'<div class="hero-copy"><div class="overline">当前筛查结论</div><div class="hero-title">{title}</div>'
-        f'<div><span class="hero-shift">{shift_hz:+.2f}</span><span class="hero-unit">Hz</span></div>'
-        f'<div class="hero-detail">当前桥梁脉冲为 {current_fp["dominant_frequency"]:.2f} Hz，历史基线为 {base_fp["dominant_frequency"]:.2f} Hz。'
-        f'动态指纹差异 {divergence:.3f}，基线自然波动阈值 {threshold:.3f}。</div>'
-        f'<div class="hero-action">{action}</div></div>',
-        unsafe_allow_html=True,
-    )
-with hero_plot:
-    st.markdown('<div class="plot-label">桥梁动态指纹 / 历史基线与当前状态</div>', unsafe_allow_html=True)
-    hero_fig = go.Figure()
-    for width, opacity in [(13, .035), (7, .055)]:
-        hero_fig.add_trace(go.Scatter(x=base_fp["grid"], y=base_fp["fingerprint"], mode="lines", line=dict(color="#4de1cd", width=width), opacity=opacity, showlegend=False, hoverinfo="skip"))
-        hero_fig.add_trace(go.Scatter(x=current_fp["grid"], y=current_fp["fingerprint"], mode="lines", line=dict(color="#ff6373", width=width), opacity=opacity, showlegend=False, hoverinfo="skip"))
-    hero_fig.add_trace(go.Scatter(x=base_fp["grid"], y=base_fp["fingerprint"], mode="lines", line=dict(color="#4de1cd", width=2.4), fill="tozeroy", fillcolor="rgba(77,225,205,.035)", name=f"历史基线 {base_fp['dominant_frequency']:.2f} Hz"))
-    hero_fig.add_trace(go.Scatter(x=current_fp["grid"], y=current_fp["fingerprint"], mode="lines", line=dict(color="#ff6373", width=2.4), fill="tozeroy", fillcolor="rgba(255,99,115,.03)", name=f"当前状态 {current_fp['dominant_frequency']:.2f} Hz"))
-    hero_fig.update_layout(**layout(390, show_y=False), xaxis_title="频率 / Hz", yaxis_title="")
-    show(hero_fig)
+bridge_svg = """
+<svg viewBox="0 0 660 340" preserveAspectRatio="none" aria-label="贵州山地桥梁移动观测示意">
+  <g fill="none" stroke="#294058" stroke-width="1" opacity=".72">
+    <path d="M0 72 C100 30 155 52 230 30 S400 14 660 58"/><path d="M0 91 C100 49 158 73 236 48 S410 32 660 78"/>
+    <path d="M0 111 C95 70 164 92 241 68 S420 53 660 99"/><path d="M0 132 C100 91 168 114 248 89 S430 74 660 120"/>
+  </g>
+  <path d="M0 253 C90 214 128 190 188 230 C230 258 258 280 315 249 C372 218 408 197 463 232 C520 268 572 226 660 206 L660 340 L0 340Z" fill="#0d1c2d"/>
+  <path d="M0 277 C78 247 131 222 188 255 C242 286 272 303 326 275 C391 241 420 225 476 256 C531 287 582 250 660 231" fill="none" stroke="#31475b" stroke-width="1"/>
+  <g stroke="#b8c3c4" fill="none">
+    <path d="M65 155 L595 155" stroke-width="3"/><path d="M97 151 L563 151" opacity=".45"/>
+    <path d="M170 155 L170 250 M180 155 L180 254 M475 155 L475 249 M485 155 L485 245" stroke-width="2"/>
+    <path d="M170 250 L180 254 M475 249 L485 245" opacity=".55"/>
+  </g>
+  <g fill="#d4dad7">
+    <rect x="118" y="143" width="18" height="7"/><circle cx="122" cy="151" r="2"/><circle cx="133" cy="151" r="2"/>
+    <rect x="267" y="143" width="22" height="7"/><circle cx="272" cy="151" r="2"/><circle cx="285" cy="151" r="2"/>
+    <rect x="397" y="143" width="19" height="7"/><circle cx="401" cy="151" r="2"/><circle cx="413" cy="151" r="2"/>
+    <rect x="526" y="143" width="20" height="7"/><circle cx="530" cy="151" r="2"/><circle cx="542" cy="151" r="2"/>
+  </g>
+  <g stroke="#d46a61" fill="none" stroke-width="2">
+    <path d="M318 151 L318 126 L324 126 L330 104 L337 137 L343 119 L349 151"/>
+  </g>
+  <g fill="#82949a" font-family="PingFang SC" font-size="10"><text x="65" y="181">车辆穿越</text><text x="293" y="92">共享桥梁频率</text><text x="515" y="181">车群采样</text></g>
+  <g stroke="#536a7d" stroke-width="1"><path d="M128 158 L128 172"/><path d="M337 146 L337 96"/><path d="M536 158 L536 172"/></g>
+</svg>
+"""
 
+result_title = "响应偏移，建议复核" if is_shift else "响应处于基线范围"
+result_action = "建议优先进行专业工程检查" if is_shift else "继续纳入常态化采集"
 st.markdown(
-    f'<div class="kpi-strip">'
-    f'<div class="kpi"><div class="kpi-label">融合样本</div><div class="kpi-value">{count}<em>次</em></div><div class="kpi-note">多车辆穿越</div></div>'
-    f'<div class="kpi"><div class="kpi-label">历史基线</div><div class="kpi-value">{base_fp["dominant_frequency"]:.2f}<em>Hz</em></div><div class="kpi-note">桥梁脉冲</div></div>'
-    f'<div class="kpi"><div class="kpi-label">当前状态</div><div class="kpi-value">{current_fp["dominant_frequency"]:.2f}<em>Hz</em></div><div class="kpi-note">最新融合结果</div></div>'
-    f'<div class="kpi"><div class="kpi-label">融合稳定度</div><div class="kpi-value">{stability:.0f}<em>%</em></div><div class="kpi-note">自助采样估计</div></div>'
-    f'<div class="kpi"><div class="kpi-label">指纹差异 / 阈值</div><div class="kpi-value">{divergence:.3f}<em>/ {threshold:.3f}</em></div><div class="kpi-note">基线 95% 波动边界</div></div>'
-    f'</div>',
+    f'<div class="bridge-plate"><div class="bridge-file"><div><div class="file-no">BRIDGE FILE / QP-01</div>'
+    f'<div class="file-title">贵州山地桥梁<br>移动观测场景</div><div class="file-sub">模拟演示场景，不对应任何真实桥梁。<br>采样率 100 Hz · 单次 8 秒。</div></div>'
+    f'<div class="file-table"><div class="file-row"><span>数据批次</span><b>0828-A</b></div><div class="file-row"><span>穿越样本</span><b>{count} 次</b></div>'
+    f'<div class="file-row"><span>分析频带</span><b>3–15 Hz</b></div></div></div>'
+    f'<div class="bridge-art">{bridge_svg}</div>'
+    f'<div class="bridge-result"><div class="result-kicker">本次筛查</div><div class="result-title">{result_title}</div>'
+    f'<div class="result-shift">{shift_hz:+.2f}<span>Hz</span></div><div class="result-rule"></div>'
+    f'<div class="result-note">基线 {base_fp["dominant_frequency"]:.2f} Hz<br>当前 {current_fp["dominant_frequency"]:.2f} Hz<br>指纹差异 {divergence:.3f}</div>'
+    f'<div class="result-action">{result_action}</div></div></div>',
     unsafe_allow_html=True,
 )
 
-story("01 / 原始证据", "单次穿越不足以判断", "车辆悬架、路面冲击和随机噪声共同主导单次观测。黔脉不使用单辆车作出桥梁状态结论。")
+stages = []
+for sample_n in sample_counts:
+    fused = fuse_crossings(baseline_all[:sample_n])
+    path = svg_path(fused["fingerprint"])
+    note = "噪声主导" if sample_n == 1 else ("共识形成" if sample_n < 20 else "脉冲稳定")
+    stages.append(
+        f'<div class="pulse-stage"><div class="stage-top"><span><span class="stage-n">{sample_n}</span> 次</span><span>{fused["dominant_frequency"]:.2f} Hz</span></div>'
+        f'<svg viewBox="0 0 140 55" preserveAspectRatio="none"><path d="M5 50 L135 50" stroke="#c7c2b7"/>'
+        f'<path d="{path}" fill="none" stroke="#657f74" stroke-width="1.6" vector-effect="non-scaling-stroke"/></svg>'
+        f'<div class="stage-note">{note}</div></div>'
+    )
+st.markdown(
+    '<div class="crowd-ribbon"><div class="ribbon-intro"><div class="ribbon-title">车流如何变成<br>桥梁脉冲</div>'
+    '<div class="ribbon-copy">同一座桥<br>不同车辆<br>共同频率逐步显现</div></div>' + "".join(stages) + '</div>',
+    unsafe_allow_html=True,
+)
+
+brief_head("01", "先看单辆车：证据很脏", "悬架、路面冲击与随机噪声共同主导单次观测；单辆车不用于桥梁状态判断。")
 raw_col, psd_col = st.columns([1.18, 1], gap="large")
 with raw_col:
-    st.markdown('<div class="chart-shell"><div class="plot-label">原始垂向加速度</div>', unsafe_allow_html=True)
-    raw_fig = go.Figure(go.Scatter(x=baseline[0]["t"], y=baseline[0]["acc"], mode="lines", line=dict(color="#67cfc2", width=.9), name="原始信号"))
-    raw_fig.update_layout(**layout(275), xaxis_title="时间 / 秒", yaxis_title="加速度 / 相对值")
-    show(raw_fig)
-    st.markdown('</div>', unsafe_allow_html=True)
+    st.markdown('<div class="chart-caption">原始垂向加速度</div>', unsafe_allow_html=True)
+    raw_fig = go.Figure(go.Scatter(x=baseline[0]["t"], y=baseline[0]["acc"], mode="lines", line=dict(color="#657f74", width=.9), name="原始信号"))
+    raw_fig.update_layout(**chart_layout(275), xaxis_title="时间 / 秒", yaxis_title="加速度 / 相对值")
+    show_chart(raw_fig)
 with psd_col:
-    st.markdown('<div class="chart-shell"><div class="plot-label">单次穿越功率谱</div>', unsafe_allow_html=True)
+    st.markdown('<div class="chart-caption">单次穿越功率谱</div>', unsafe_allow_html=True)
     single = crossing_to_peaks(baseline[0])
-    psd_fig = go.Figure(go.Scatter(x=single["f"], y=single["pxx"], mode="lines", line=dict(color="#eab661", width=1.35), fill="tozeroy", fillcolor="rgba(234,182,97,.045)", name="功率谱"))
-    psd_fig.update_layout(**layout(275), xaxis_title="频率 / Hz", yaxis_title="功率谱密度")
-    show(psd_fig)
-    st.markdown('</div>', unsafe_allow_html=True)
+    psd_fig = go.Figure(go.Scatter(x=single["f"], y=single["pxx"], mode="lines", line=dict(color="#b58d56", width=1.25), fill="tozeroy", fillcolor="rgba(181,141,86,.09)", name="功率谱"))
+    psd_fig.update_layout(**chart_layout(275), xaxis_title="频率 / Hz", yaxis_title="功率谱密度")
+    show_chart(psd_fig)
 
-story("02 / 群体共识", "桥梁脉冲从多车数据中浮现", "不同车辆的自身频率持续变化；只有桥梁共享频率会在多次穿越融合中不断增强并稳定收敛。")
-st.markdown('<div class="chart-shell"><div class="plot-label">融合规模与动态指纹收敛</div>', unsafe_allow_html=True)
-fusion_fig = go.Figure()
-palette = ["#283a46", "#334c58", "#3b5d66", "#3d7978", "#43b5a8", "#4de1cd"]
-for idx, sample_n in enumerate(counts):
-    if sample_n <= len(baseline_all):
+brief_head("02", "再看车群：桥梁频率留下来", "车辆自身频率持续变化；只有同一座桥共享的结构频率会在融合中稳定增强。")
+fusion_col, vehicle_col = st.columns([1.45, .75], gap="large")
+with fusion_col:
+    st.markdown('<div class="chart-caption">多次穿越融合指纹</div>', unsafe_allow_html=True)
+    fusion_fig = go.Figure()
+    palette = ["#c1c4be", "#aeb5ad", "#929f96", "#788b7f", "#596f61"]
+    for idx, sample_n in enumerate(sample_counts):
         fused = fuse_crossings(baseline_all[:sample_n])
-        fusion_fig.add_trace(go.Scatter(x=fused["grid"], y=fused["fingerprint"], mode="lines", line=dict(color=palette[idx], width=1.1 + idx * .22), name=f"{sample_n} 次"))
-fusion_fig.add_vline(x=base_fp["dominant_frequency"], line_dash="dot", line_color="#79e7d8", annotation_text=f"共识脉冲 {base_fp['dominant_frequency']:.2f} Hz", annotation_font_color="#87d9ce", annotation_position="top right")
-fusion_fig.update_layout(**layout(370), xaxis_title="频率 / Hz", yaxis_title="归一化共识密度")
-show(fusion_fig)
-st.markdown('</div>', unsafe_allow_html=True)
-
-small_left, small_right = st.columns([1, 1], gap="large")
-with small_left:
-    st.markdown('<div class="chart-shell"><div class="plot-label">桥梁脉冲收敛轨迹</div>', unsafe_allow_html=True)
-    conv_fig = go.Figure(go.Scatter(x=[x["n"] for x in conv], y=[x["dominant_frequency"] for x in conv], mode="lines+markers", line=dict(color="#4de1cd", width=2), marker=dict(size=6, color="#05080d", line=dict(color="#4de1cd", width=1.7)), name="桥梁脉冲"))
-    conv_fig.add_hline(y=baseline_f, line_dash="dot", line_color="#3b4c58")
-    conv_fig.update_layout(**layout(255), xaxis_title="融合样本 / 次", yaxis_title="频率 / Hz")
-    show(conv_fig)
-    st.markdown('</div>', unsafe_allow_html=True)
-with small_right:
-    st.markdown('<div class="chart-shell"><div class="plot-label">车辆自身频率离散分布</div>', unsafe_allow_html=True)
+        fusion_fig.add_trace(go.Scatter(x=fused["grid"], y=fused["fingerprint"], mode="lines", line=dict(color=palette[idx], width=1 + idx * .3), name=f"{sample_n} 次"))
+    fusion_fig.add_vline(x=base_fp["dominant_frequency"], line_dash="dot", line_color="#596f61", annotation_text=f"桥梁脉冲 {base_fp['dominant_frequency']:.2f} Hz", annotation_font_color="#596f61", annotation_position="top right")
+    fusion_fig.update_layout(**chart_layout(330), xaxis_title="频率 / Hz", yaxis_title="归一化共识密度")
+    show_chart(fusion_fig)
+with vehicle_col:
+    st.markdown('<div class="chart-caption">车辆自身频率</div>', unsafe_allow_html=True)
     vehicle_freqs = [c.get("vehicle_freq", np.nan) for c in baseline_all[:50]]
-    vehicle_fig = go.Figure(go.Scatter(x=list(range(1, len(vehicle_freqs) + 1)), y=vehicle_freqs, mode="markers", marker=dict(color="#eab661", size=4.5, opacity=.72), name="车辆频率"))
-    vehicle_fig.add_hline(y=base_fp["dominant_frequency"], line_dash="dot", line_color="#4de1cd")
-    vehicle_fig.update_layout(**layout(255), xaxis_title="车辆编号", yaxis_title="频率 / Hz")
-    show(vehicle_fig)
-    st.markdown('</div>', unsafe_allow_html=True)
+    vehicle_fig = go.Figure(go.Scatter(x=list(range(1, len(vehicle_freqs) + 1)), y=vehicle_freqs, mode="markers", marker=dict(color="#b58d56", size=4.5, opacity=.72), name="车辆频率"))
+    vehicle_fig.add_hline(y=base_fp["dominant_frequency"], line_dash="dot", line_color="#657f74", annotation_text="桥梁共识", annotation_font_color="#657f74")
+    vehicle_fig.update_layout(**chart_layout(330), xaxis_title="车辆编号", yaxis_title="频率 / Hz")
+    show_chart(vehicle_fig)
 
-story("03 / 统计闭环", "异常结论来自桥梁自身基线", "将历史穿越数据反复拆分并比较，得到自然波动分布与 95% 阈值；当前差异只有越过该阈值才触发复核建议。")
-hist_col, decision_col = st.columns([1.35, .82], gap="large")
+brief_head("03", "最后与桥梁自身历史比较", "从历史基线内部拆分估计自然波动；当前差异越过 95% 阈值后，才给出专业复核建议。")
+hist_col, side_col = st.columns([1.35, .72], gap="large")
 with hist_col:
-    st.markdown('<div class="chart-shell"><div class="plot-label">历史基线内部差异分布</div>', unsafe_allow_html=True)
-    hist_fig = go.Figure(go.Histogram(x=boot["values"], nbinsx=14, marker=dict(color="#315c60", line=dict(color="#4a7c7c", width=.5)), opacity=.86, name="自然波动"))
-    hist_fig.add_vline(x=threshold, line_dash="dot", line_color="#eab661", annotation_text=f"95% 阈值 {threshold:.3f}", annotation_font_color="#d5ab69", annotation_position="top left")
-    hist_fig.add_vline(x=divergence, line_color="#ff6373", line_width=2, annotation_text=f"当前差异 {divergence:.3f}", annotation_font_color="#ff8893", annotation_position="top right")
-    hist_fig.update_layout(**layout(320), xaxis_title="指纹差异", yaxis_title="出现次数", bargap=.12)
-    show(hist_fig)
-    st.markdown('</div>', unsafe_allow_html=True)
-with decision_col:
-    decision_title = "超过自然波动阈值" if is_shift else "未超过自然波动阈值"
-    recommendation = "建议优先进行专业工程检查" if is_shift else "继续积累常态化穿越数据"
+    st.markdown('<div class="chart-caption">基线自然波动与当前差异</div>', unsafe_allow_html=True)
+    hist_fig = go.Figure(go.Histogram(x=boot["values"], nbinsx=14, marker=dict(color="#829287", line=dict(color="#657f74", width=.5)), opacity=.88, name="基线自然波动"))
+    hist_fig.add_vline(x=threshold, line_dash="dot", line_color="#b58d56", annotation_text=f"95% 阈值 {threshold:.3f}", annotation_font_color="#8d693b", annotation_position="top left")
+    hist_fig.add_vline(x=divergence, line_color="#a13e35", line_width=2, annotation_text=f"当前差异 {divergence:.3f}", annotation_font_color="#a13e35", annotation_position="top right")
+    hist_fig.update_layout(**chart_layout(310), xaxis_title="指纹差异", yaxis_title="出现次数", bargap=.12)
+    show_chart(hist_fig)
+with side_col:
+    side_title = "超过自然波动范围" if is_shift else "处于自然波动范围"
     st.markdown(
-        f'<div class="decision"><div class="decision-label">筛查判定</div><div class="decision-title">{decision_title}</div>'
-        f'<div class="decision-row"><span>当前指纹差异</span><strong>{divergence:.3f}</strong></div>'
-        f'<div class="decision-row"><span>基线 95% 阈值</span><strong>{threshold:.3f}</strong></div>'
-        f'<div class="decision-row"><span>频率变化</span><strong>{shift_hz:+.2f} Hz</strong></div>'
-        f'<div class="decision-rec">{recommendation}</div></div>',
-        unsafe_allow_html=True,
+        f'<div class="side-note"><div class="side-label">筛查记录 / 0828-A</div><div class="side-title">{side_title}</div>'
+        f'<div class="side-row"><span>历史基线</span><strong>{base_fp["dominant_frequency"]:.2f} Hz</strong></div>'
+        f'<div class="side-row"><span>当前状态</span><strong>{current_fp["dominant_frequency"]:.2f} Hz</strong></div>'
+        f'<div class="side-row"><span>频率变化</span><strong>{shift_hz:+.2f} Hz</strong></div>'
+        f'<div class="side-row"><span>指纹差异 / 阈值</span><strong>{divergence:.3f} / {threshold:.3f}</strong></div>'
+        f'<div class="side-action">{result_action}</div></div>', unsafe_allow_html=True,
     )
 
 st.markdown(
-    '<div class="boundary">方法边界：黔脉仅筛查桥梁相对自身历史基线的持续动态响应变化，不进行损伤类型识别、裂缝诊断或安全等级判断，也不能替代专业桥梁检测。</div>',
+    '<div class="method-boundary">方法边界：黔脉只筛查桥梁相对自身历史基线的持续动态响应变化，不进行损伤类型识别、裂缝诊断或安全等级判断，也不能替代专业桥梁检测。页面所示为模拟演示数据。</div>',
     unsafe_allow_html=True,
 )
