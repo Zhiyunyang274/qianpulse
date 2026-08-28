@@ -16,129 +16,299 @@ from qianpulse.engine import (
 from qianpulse.io_sensorlogger import load_sensorlogger_export
 from qianpulse.simulate import simulate_batch
 
+
 st.set_page_config(page_title="黔脉 QianPulse", page_icon="🌉", layout="wide")
-st.markdown("""
-<style>
-.stApp { background: #071018; color: #e7f0f5; }
-[data-testid="stHeader"] { background: rgba(7,16,24,0.9); }
-.block-container { padding-top: 2rem; max-width: 1450px; }
-.eyebrow { color:#67d6c3; letter-spacing:.14em; font-size:.72rem; font-weight:700; }
-.alert-box { border:1px solid #e16d64; background:#2b171c; border-radius:12px; padding:18px; }
-[data-testid="stMetricValue"] { color:#e7f0f5; }
-[data-testid="stMetricLabel"] { color:#8ca6b3; }
-</style>
-""", unsafe_allow_html=True)
+
+st.markdown(
+    """
+    <style>
+    :root {
+        --bg: #060b11;
+        --panel: #0b131c;
+        --panel-2: #0e1823;
+        --line: #1b2a38;
+        --text: #edf4f7;
+        --muted: #718596;
+        --cyan: #39d6c4;
+        --amber: #f1b85b;
+        --red: #ff6b78;
+    }
+    html, body, [class*="css"] { font-family: Inter, "PingFang SC", "Microsoft YaHei", sans-serif; }
+    .stApp { background: var(--bg); color: var(--text); }
+    [data-testid="stHeader"] { background: transparent; height: 0; }
+    [data-testid="stToolbar"], #MainMenu, footer { display: none !important; }
+    .block-container { max-width: 1320px; padding: 1.5rem 2rem 4rem; }
+    [data-testid="stSidebar"] { background: #080e15; border-right: 1px solid var(--line); }
+    [data-testid="stSidebar"] > div:first-child { padding-top: 1.4rem; }
+    [data-testid="stSidebar"] * { color: #cbd8df; }
+    [data-testid="stSidebar"] hr { border-color: var(--line); }
+    [data-testid="stSidebar"] [data-baseweb="radio"] > div:first-child { background-color: var(--cyan); }
+    [data-testid="stSidebar"] .stButton button {
+        background: var(--cyan); border: 0; color: #03100f; font-weight: 750;
+        min-height: 42px; border-radius: 7px;
+    }
+    [data-testid="stSidebar"] .stButton button:hover { background: #63e4d5; color: #03100f; }
+    [data-testid="stSidebar"] .stButton button p { color: #03100f !important; font-weight: 750; }
+    [data-testid="stSidebar"] [data-baseweb="input"],
+    [data-testid="stSidebar"] [data-baseweb="base-input"],
+    [data-testid="stSidebar"] input { background: var(--panel) !important; color: var(--text) !important; }
+    [data-testid="stSidebar"] [role="slider"] { color: var(--cyan) !important; }
+    [data-testid="stFileUploaderDropzone"] { background: var(--panel); border-color: var(--line); }
+    [data-testid="stVerticalBlockBorderWrapper"] {
+        background: linear-gradient(180deg, rgba(14,24,35,.96), rgba(9,17,25,.96));
+        border: 1px solid var(--line) !important; border-radius: 10px !important;
+    }
+    .brandbar { display:flex; align-items:center; justify-content:space-between; padding:4px 0 18px; }
+    .brand { display:flex; align-items:baseline; gap:12px; }
+    .brand-cn { font-size:1.35rem; font-weight:800; letter-spacing:.14em; color:var(--text); }
+    .brand-en { font-size:.67rem; font-weight:700; letter-spacing:.24em; color:var(--cyan); }
+    .brand-desc { color:var(--muted); font-size:.79rem; letter-spacing:.02em; }
+    .live-chip { display:inline-flex; align-items:center; gap:8px; border:1px solid var(--line); background:var(--panel); padding:7px 11px; border-radius:999px; color:#9fb0bd; font-size:.72rem; }
+    .live-dot { width:6px; height:6px; border-radius:50%; background:var(--cyan); box-shadow:0 0 10px var(--cyan); }
+    .status-strip { display:flex; align-items:center; justify-content:space-between; gap:24px; background:linear-gradient(90deg,#0d1822,#101821); border:1px solid var(--line); border-left:3px solid var(--red); padding:18px 20px; border-radius:9px; margin-bottom:14px; }
+    .status-strip.normal { border-left-color:var(--cyan); }
+    .status-kicker { color:var(--muted); font-size:.67rem; letter-spacing:.18em; margin-bottom:5px; }
+    .status-title { font-size:1.03rem; font-weight:750; letter-spacing:.04em; }
+    .status-note { color:#8fa1af; font-size:.78rem; margin-top:4px; }
+    .status-action { text-align:right; color:#dce7ec; font-size:.78rem; white-space:nowrap; }
+    .metric-card { min-height:91px; background:var(--panel); border:1px solid var(--line); border-radius:9px; padding:14px 15px; }
+    .metric-label { color:var(--muted); font-size:.68rem; letter-spacing:.08em; margin-bottom:8px; }
+    .metric-value { color:var(--text); font-size:1.47rem; font-weight:690; line-height:1; }
+    .metric-unit { color:#8fa1af; font-size:.72rem; margin-left:4px; }
+    .metric-sub { color:#5e7586; font-size:.66rem; margin-top:7px; }
+    .section-head { display:flex; align-items:flex-end; justify-content:space-between; gap:20px; margin:30px 0 12px; }
+    .section-index { color:var(--cyan); font-size:.64rem; font-weight:800; letter-spacing:.2em; margin-bottom:5px; }
+    .section-title { color:var(--text); font-size:.96rem; font-weight:720; letter-spacing:.04em; }
+    .section-desc { color:var(--muted); font-size:.75rem; max-width:620px; text-align:right; }
+    .panel-title { color:#a9bac5; font-size:.68rem; font-weight:650; letter-spacing:.08em; margin:2px 0 -6px; }
+    .boundary { margin-top:24px; border-top:1px solid var(--line); padding-top:14px; color:#647887; font-size:.7rem; line-height:1.7; }
+    div[data-testid="stPlotlyChart"] { margin-top:-6px; }
+    @media (max-width: 900px) {
+        .brand-desc, .section-desc { display:none; }
+        .status-strip { align-items:flex-start; flex-direction:column; }
+        .status-action { text-align:left; }
+    }
+    </style>
+    """,
+    unsafe_allow_html=True,
+)
+
 
 @st.cache_data(show_spinner=False)
 def demo_data(seed, baseline_f, shifted_f):
-    return simulate_batch(60, bridge_freq=baseline_f, seed=seed), simulate_batch(60, bridge_freq=shifted_f, seed=seed + 100)
+    return (
+        simulate_batch(60, bridge_freq=baseline_f, seed=seed),
+        simulate_batch(60, bridge_freq=shifted_f, seed=seed + 100),
+    )
 
-def dark_layout(height=360):
-    return dict(height=height, template="plotly_dark", paper_bgcolor="rgba(0,0,0,0)", plot_bgcolor="rgba(0,0,0,0)", margin=dict(l=45, r=20, t=30, b=45), legend=dict(orientation="h", y=1.08), hovermode="x unified")
 
-st.markdown('<div class="eyebrow">QIANPULSE / 黔脉</div>', unsafe_allow_html=True)
-st.title("把营运车辆变成桥梁的移动感知网络")
-st.caption("用移动感知筛查桥梁动态响应变化 · 本地离线黑客松演示")
+def chart_layout(height=320):
+    return dict(
+        height=height,
+        paper_bgcolor="rgba(0,0,0,0)",
+        plot_bgcolor="rgba(0,0,0,0)",
+        font=dict(family='Inter, "PingFang SC", sans-serif', color="#8194a3", size=11),
+        margin=dict(l=44, r=18, t=24, b=42),
+        hovermode="x unified",
+        legend=dict(orientation="h", y=1.10, x=0, font=dict(size=10), bgcolor="rgba(0,0,0,0)"),
+        xaxis=dict(showgrid=False, zeroline=False, linecolor="#263746", tickcolor="#263746"),
+        yaxis=dict(showgrid=True, gridcolor="#172532", zeroline=False, linecolor="#263746"),
+    )
+
+
+def show_chart(fig):
+    st.plotly_chart(fig, use_container_width=True, config={"displayModeBar": False, "scrollZoom": False})
+
+
+def section_header(index, title, description):
+    st.markdown(
+        f'<div class="section-head"><div><div class="section-index">{index}</div>'
+        f'<div class="section-title">{title}</div></div>'
+        f'<div class="section-desc">{description}</div></div>',
+        unsafe_allow_html=True,
+    )
+
+
+def metric_card(label, value, unit="", sub=""):
+    st.markdown(
+        f'<div class="metric-card"><div class="metric-label">{label}</div>'
+        f'<div class="metric-value">{value}<span class="metric-unit">{unit}</span></div>'
+        f'<div class="metric-sub">{sub}</div></div>',
+        unsafe_allow_html=True,
+    )
+
 
 with st.sidebar:
-    st.header("演示控制")
-    mode = st.radio("数据来源", ["模拟数据 · 演示", "真实数据 · Sensor Logger"], index=0)
-    baseline_f = st.slider("基线桥梁脉冲（Hz）", 5.0, 10.0, 7.8, 0.1)
-    shifted_f = st.slider("当前结构响应（Hz）", 5.0, 10.0, 7.2, 0.1)
-    n = st.slider("融合穿越次数", 1, 50, 30, 1)
-    seed = st.number_input("固定随机种子", 0, 9999, 42)
-    replay = st.button("▶  播放黔脉演示", use_container_width=True, type="primary")
-    upload = st.file_uploader("上传 Sensor Logger CSV 或 ZIP", type=["csv", "zip"]) if mode.startswith("真实") else None
-    st.divider()
-    st.caption("模拟演示数据" if mode.startswith("模拟") else "真实 Sensor Logger 数据")
+    st.markdown("### 控制台")
+    mode = st.radio("数据源", ["模拟演示", "Sensor Logger"], index=0)
+    st.markdown("---")
+    baseline_f = st.slider("基线频率 / Hz", 5.0, 10.0, 7.8, 0.1)
+    shifted_f = st.slider("当前频率 / Hz", 5.0, 10.0, 7.2, 0.1)
+    n = st.slider("融合样本 / 次", 1, 50, 30, 1)
+    seed = st.number_input("随机种子", 0, 9999, 42)
+    replay = st.button("运行演示流程", use_container_width=True, type="primary")
+    upload = st.file_uploader("导入 CSV / ZIP", type=["csv", "zip"]) if mode == "Sensor Logger" else None
+    st.markdown("---")
+    st.caption("本机计算 · 无需联网")
 
 if replay:
-    progress = st.progress(0, text="正在启动桥梁感知演示…")
-    for pct, label in [(12, "1 次穿越 · 信号很嘈杂"), (30, "5 次穿越 · 候选频率出现"), (52, "10 次穿越 · 共识逐渐形成"), (72, "20 次穿越 · 脉冲趋于稳定"), (88, "50 次穿越 · 建立历史基线"), (100, "当前状态 · 筛查响应变化")]:
+    progress = st.progress(0, text="正在载入单次穿越信号")
+    for pct, label in [
+        (18, "正在载入单次穿越信号"),
+        (42, "正在聚合多车辆频谱"),
+        (67, "正在建立桥梁脉冲基线"),
+        (86, "正在计算自然波动阈值"),
+        (100, "正在完成当前状态筛查"),
+    ]:
         progress.progress(pct, text=label)
-        time.sleep(0.18)
+        time.sleep(0.16)
     progress.empty()
 
 baseline_all, shifted_all = demo_data(int(seed), baseline_f, shifted_f)
-data_note = "模拟演示数据"
-if mode.startswith("真实") and upload is not None:
-    suffix = Path(upload.name).suffix
-    with tempfile.NamedTemporaryFile(suffix=suffix) as handle:
+data_note = "模拟数据"
+if mode == "Sensor Logger" and upload is not None:
+    with tempfile.NamedTemporaryFile(suffix=Path(upload.name).suffix) as handle:
         handle.write(upload.getvalue())
         handle.flush()
         real_crossings = load_sensorlogger_export(handle.name)
     if real_crossings:
         baseline_all = real_crossings
         shifted_all = real_crossings
-        data_note = f"真实 Sensor Logger · {len(real_crossings)} 次穿越"
+        data_note = f"Sensor Logger · {len(real_crossings)} 次"
     else:
-        st.warning("没有找到包含 x/y/z 加速度列的文件，当前展示模拟数据。")
+        st.warning("未识别到有效的三轴加速度数据，已回退至模拟数据。")
 
-baseline, shifted = baseline_all[:n], shifted_all[:n]
+available_n = min(n, len(baseline_all), len(shifted_all))
+baseline, shifted = baseline_all[:available_n], shifted_all[:available_n]
 base_fused, shift_fused = fuse_crossings(baseline), fuse_crossings(shifted)
 boot = bootstrap_baseline_divergence(baseline_all[:40], seed=int(seed) + 8)
 threshold = boot["threshold95"]
 div = fingerprint_divergence(base_fused["fingerprint"], shift_fused["fingerprint"])
 is_shift = bool(np.isfinite(threshold) and div > threshold and abs(shifted_f - baseline_f) >= 0.2)
+counts = [1, 5, 10, 20, 30, 50]
+conv = convergence_curve(baseline_all, counts=counts, seed=int(seed) + 11)
+stability_item = min(conv, key=lambda item: abs(item["n"] - available_n))
+stability = stability_item["stability"] * 100
 
-c1, c2, c3, c4, c5 = st.columns(5)
-c1.metric("融合穿越次数", n)
-c2.metric("基线桥梁脉冲", f"{base_fused['dominant_frequency']:.2f} Hz")
-c3.metric("当前桥梁脉冲", f"{shift_fused['dominant_frequency']:.2f} Hz")
-c4.metric("脉冲稳定度", f"{base_fused['pulse_stability'] * 100:.0f}%")
-c5.metric("指纹差异", f"{div:.3f}", f"阈值 {threshold:.3f}")
-st.caption(f"数据模式：**{data_note}**")
+status_class = "" if is_shift else " normal"
+status_title = "响应偏移 · 建议复核" if is_shift else "响应稳定 · 基线范围内"
+status_note = (
+    f"当前脉冲较历史基线变化 {shift_fused['dominant_frequency'] - base_fused['dominant_frequency']:+.2f} Hz"
+    if is_shift else "当前动态指纹未超过自然波动阈值"
+)
+status_action = "建议优先安排专业工程检查" if is_shift else "继续纳入常态化采集"
 
-st.divider()
-st.markdown("### 01 · 单辆车的信号很嘈杂")
-st.caption("单次穿越 · 证据不足，不能据此判断桥梁状态")
-left, right = st.columns(2)
+st.markdown(
+    f'<div class="brandbar"><div class="brand"><span class="brand-cn">黔脉</span>'
+    f'<span class="brand-en">QIANPULSE</span><span class="brand-desc">桥梁动态响应移动感知</span></div>'
+    f'<span class="live-chip"><span class="live-dot"></span>{data_note} · 离线分析</span></div>',
+    unsafe_allow_html=True,
+)
+st.markdown(
+    f'<div class="status-strip{status_class}"><div><div class="status-kicker">筛查状态</div>'
+    f'<div class="status-title">{status_title}</div><div class="status-note">{status_note}</div></div>'
+    f'<div class="status-action">{status_action}</div></div>',
+    unsafe_allow_html=True,
+)
+
+m1, m2, m3, m4, m5 = st.columns(5, gap="small")
+with m1:
+    metric_card("融合样本", str(available_n), "次", "多车辆穿越")
+with m2:
+    metric_card("基线脉冲", f"{base_fused['dominant_frequency']:.2f}", "Hz", "历史动态指纹")
+with m3:
+    metric_card("当前脉冲", f"{shift_fused['dominant_frequency']:.2f}", "Hz", "当前观测状态")
+with m4:
+    metric_card("融合稳定度", f"{stability:.0f}", "%", "自助采样频率离散度")
+with m5:
+    metric_card("指纹差异", f"{div:.3f}", "", f"95% 阈值 {threshold:.3f}")
+
+section_header("01 / 单次穿越", "单次穿越观测", "车辆、路面冲击与随机噪声相互叠加；单次信号仅用于展示原始证据，不用于状态判断。")
+left, right = st.columns(2, gap="medium")
 with left:
-    fig = go.Figure(go.Scatter(x=baseline[0]["t"], y=baseline[0]["acc"], mode="lines", line=dict(color="#67d6c3", width=1.2), name="原始加速度"))
-    fig.update_layout(**dark_layout(), xaxis_title="时间（秒）", yaxis_title="加速度（相对值）")
-    st.plotly_chart(fig, use_container_width=True)
+    with st.container(border=True):
+        st.markdown('<div class="panel-title">原始垂向加速度</div>', unsafe_allow_html=True)
+        raw_fig = go.Figure(go.Scatter(
+            x=baseline[0]["t"], y=baseline[0]["acc"], mode="lines",
+            line=dict(color="#39d6c4", width=1), name="加速度",
+        ))
+        raw_fig.update_layout(**chart_layout(300), xaxis_title="时间 / 秒", yaxis_title="加速度 / 相对值")
+        show_chart(raw_fig)
 with right:
-    single = crossing_to_peaks(baseline[0])
-    fig = go.Figure(go.Scatter(x=single["f"], y=single["pxx"], mode="lines", line=dict(color="#f4b860"), name="单次 PSD"))
-    fig.update_layout(**dark_layout(), xaxis_title="频率（Hz）", yaxis_title="功率谱密度")
-    st.plotly_chart(fig, use_container_width=True)
+    with st.container(border=True):
+        st.markdown('<div class="panel-title">单次穿越功率谱</div>', unsafe_allow_html=True)
+        single = crossing_to_peaks(baseline[0])
+        psd_fig = go.Figure(go.Scatter(
+            x=single["f"], y=single["pxx"], mode="lines",
+            line=dict(color="#f1b85b", width=1.5), fill="tozeroy", fillcolor="rgba(241,184,91,.08)", name="PSD",
+        ))
+        psd_fig.update_layout(**chart_layout(300), xaxis_title="频率 / Hz", yaxis_title="功率谱密度")
+        show_chart(psd_fig)
 
-st.divider()
-st.markdown("### 02 · 桥梁脉冲从人群数据中浮现")
-st.caption("多次穿越通过 KDE / 共识融合：车辆自身的随机峰逐渐减弱，共同的桥梁频率最终占据主导。")
-fig = go.Figure()
-for count in [1, 5, 10, 20, 30, 50]:
-    if count <= len(baseline_all):
+section_header("02 / 多车共识", "多车融合与收敛", "车辆自身频率随车辆变化，共同的桥梁频率在多次穿越共识中持续增强。")
+with st.container(border=True):
+    st.markdown('<div class="panel-title">桥梁动态指纹 · 样本规模对比</div>', unsafe_allow_html=True)
+    fusion_fig = go.Figure()
+    for count in counts:
+        if count > len(baseline_all):
+            continue
         fused = fuse_crossings(baseline_all[:count])
-    fig.add_trace(go.Scatter(x=fused["grid"], y=fused["fingerprint"], mode="lines", name=f"{count} 次", visible=True if count == n else "legendonly"))
-fig.add_vline(x=base_fused["dominant_frequency"], line_dash="dash", line_color="#67d6c3", annotation_text=f"桥梁脉冲 {base_fused['dominant_frequency']:.2f} Hz")
-fig.update_layout(**dark_layout(430), xaxis_title="频率（Hz）", yaxis_title="归一化共识密度")
-st.plotly_chart(fig, use_container_width=True)
+        is_selected = count == min(counts, key=lambda x: abs(x - available_n))
+        fusion_fig.add_trace(go.Scatter(
+            x=fused["grid"], y=fused["fingerprint"], mode="lines", name=f"{count} 次",
+            line=dict(width=2.6 if is_selected else 1.1, color="#39d6c4" if is_selected else None),
+            opacity=1 if is_selected else .42,
+        ))
+    fusion_fig.add_vline(
+        x=base_fused["dominant_frequency"], line_dash="dot", line_color="#39d6c4",
+        annotation_text=f"共识脉冲 {base_fused['dominant_frequency']:.2f} Hz",
+        annotation_font_color="#8feadd", annotation_position="top right",
+    )
+    fusion_fig.update_layout(**chart_layout(390), xaxis_title="频率 / Hz", yaxis_title="归一化共识密度")
+    show_chart(fusion_fig)
 
-conv = convergence_curve(baseline_all, counts=[1, 5, 10, 20, 30, 50])
-cc1, cc2 = st.columns([1.25, 1])
-with cc1:
-    fig = go.Figure(go.Scatter(x=[x["n"] for x in conv], y=[x["dominant_frequency"] for x in conv], mode="lines+markers", line=dict(color="#67d6c3", width=3), name="桥梁脉冲"))
-    fig.add_hline(y=baseline_f, line_dash="dot", line_color="#8ca6b3")
-    fig.update_layout(**dark_layout(280), xaxis_title="融合穿越次数（N）", yaxis_title="估计脉冲（Hz）")
-    st.plotly_chart(fig, use_container_width=True)
-with cc2:
-    vehicle = [c.get("vehicle_freq", np.nan) for c in baseline_all[:50]]
-    fig = go.Figure(go.Scatter(x=list(range(1, len(vehicle) + 1)), y=vehicle, mode="markers", marker=dict(color="#f4b860", size=7), name="车辆自身频率"))
-    fig.add_hline(y=base_fused["dominant_frequency"], line_dash="dash", line_color="#67d6c3")
-    fig.update_layout(**dark_layout(280), xaxis_title="车辆编号", yaxis_title="车辆自身频率（Hz）")
-    st.plotly_chart(fig, use_container_width=True)
+conv_left, conv_right = st.columns([1.15, 1], gap="medium")
+with conv_left:
+    with st.container(border=True):
+        st.markdown('<div class="panel-title">桥梁脉冲收敛轨迹</div>', unsafe_allow_html=True)
+        convergence_fig = go.Figure(go.Scatter(
+            x=[x["n"] for x in conv], y=[x["dominant_frequency"] for x in conv],
+            mode="lines+markers", line=dict(color="#39d6c4", width=2.4),
+            marker=dict(size=7, color="#06100f", line=dict(color="#39d6c4", width=2)), name="估计脉冲",
+        ))
+        convergence_fig.add_hline(y=baseline_f, line_dash="dot", line_color="#526575")
+        convergence_fig.update_layout(**chart_layout(270), xaxis_title="融合样本 / 次", yaxis_title="频率 / Hz")
+        show_chart(convergence_fig)
+with conv_right:
+    with st.container(border=True):
+        st.markdown('<div class="panel-title">车辆频率离散性验证</div>', unsafe_allow_html=True)
+        vehicle = [c.get("vehicle_freq", np.nan) for c in baseline_all[:50]]
+        vehicle_fig = go.Figure(go.Scatter(
+            x=list(range(1, len(vehicle) + 1)), y=vehicle, mode="markers",
+            marker=dict(color="#f1b85b", size=5, opacity=.76), name="车辆自身频率",
+        ))
+        vehicle_fig.add_hline(y=base_fused["dominant_frequency"], line_dash="dot", line_color="#39d6c4")
+        vehicle_fig.update_layout(**chart_layout(270), xaxis_title="车辆编号", yaxis_title="频率 / Hz")
+        show_chart(vehicle_fig)
 
-st.divider()
-st.markdown("### 03 · 历史基线与当前状态对比")
-fig = go.Figure()
-fig.add_trace(go.Scatter(x=base_fused["grid"], y=base_fused["fingerprint"], mode="lines", line=dict(color="#67d6c3", width=3), name=f"历史基线 · {base_fused['dominant_frequency']:.2f} Hz"))
-fig.add_trace(go.Scatter(x=shift_fused["grid"], y=shift_fused["fingerprint"], mode="lines", line=dict(color="#f46d63", width=3), name=f"当前状态 · {shift_fused['dominant_frequency']:.2f} Hz"))
-fig.update_layout(**dark_layout(380), xaxis_title="频率（Hz）", yaxis_title="归一化动态指纹")
-st.plotly_chart(fig, use_container_width=True)
+section_header("03 / 漂移筛查", "基线漂移筛查", "使用历史基线内部自助采样波动建立 95% 阈值，再与当前动态指纹进行同桥纵向比较。")
+with st.container(border=True):
+    st.markdown('<div class="panel-title">历史基线 / 当前状态</div>', unsafe_allow_html=True)
+    compare_fig = go.Figure()
+    compare_fig.add_trace(go.Scatter(
+        x=base_fused["grid"], y=base_fused["fingerprint"], mode="lines",
+        line=dict(color="#39d6c4", width=2.7), fill="tozeroy", fillcolor="rgba(57,214,196,.06)",
+        name=f"历史基线 · {base_fused['dominant_frequency']:.2f} Hz",
+    ))
+    compare_fig.add_trace(go.Scatter(
+        x=shift_fused["grid"], y=shift_fused["fingerprint"], mode="lines",
+        line=dict(color="#ff6b78", width=2.7), fill="tozeroy", fillcolor="rgba(255,107,120,.04)",
+        name=f"当前状态 · {shift_fused['dominant_frequency']:.2f} Hz",
+    ))
+    compare_fig.update_layout(**chart_layout(360), xaxis_title="频率 / Hz", yaxis_title="归一化动态指纹")
+    show_chart(compare_fig)
 
-if is_shift:
-    st.markdown(f'<div class="alert-box"><div class="eyebrow" style="color:#ff9b91">检测到结构响应发生持续偏移</div><p>当前脉冲相对基线变化 <b>{shift_fused["dominant_frequency"] - base_fused["dominant_frequency"]:+.2f} Hz</b> · 指纹差异 <b>{div:.3f}</b> 超过基线 95% 正常波动阈值 <b>{threshold:.3f}</b>。</p><p><b>建议优先进行专业工程检查。</b></p></div>', unsafe_allow_html=True)
-else:
-    st.success(f"处于历史基线正常波动范围 · 指纹差异 {div:.3f}，阈值 {threshold:.3f}")
-st.info("黔脉只筛查桥梁相对自身历史基线的动态响应变化，不做结构损伤诊断，也不能替代专业桥梁检测。")
+st.markdown(
+    '<div class="boundary">方法边界：黔脉用于筛查桥梁相对自身历史基线的持续动态响应变化，不进行损伤类型识别、裂缝诊断或安全等级判断，也不能替代专业桥梁检测。</div>',
+    unsafe_allow_html=True,
+)
