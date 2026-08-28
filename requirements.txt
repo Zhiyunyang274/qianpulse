@@ -4,3 +4,5 @@ scipy>=1.12
 plotly>=5.20
 streamlit>=1.33
 pytest>=8.0
+urllib3<2
+watchdog>=4.0
