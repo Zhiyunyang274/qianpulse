@@ -16,6 +16,10 @@
 </p>
 
 <p align="center">
+  <sub>首次打开在线演示加载时间较长（尤其是地图，矢量瓦片经服务器代理缓存，首次加载后显著提速）——请耐心等待</sub>
+</p>
+
+<p align="center">
   <img src="https://img.shields.io/badge/Tag-%23Guikesong-9146FF" alt="#Guikesong"/>
 </p>
 
