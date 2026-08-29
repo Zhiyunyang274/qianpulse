@@ -104,7 +104,7 @@ flowchart LR
 
 ```bash
 # 1. 克隆
-git clone https://github.com/<你的用户名>/qianpulse.git
+git clone https://github.com/Zhiyunyang274/qianpulse.git
 cd qianpulse
 
 # 2. 一键运行（自动创建 venv 并安装依赖）
