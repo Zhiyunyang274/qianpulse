@@ -1109,6 +1109,38 @@ def render_method():
     </div>
     ''', unsafe_allow_html=True)
 
+    # ---- 学术验证：这条路径已被真实桥梁实验走通（Nature Portfolio, 2022）----
+    st.markdown('''
+    <style>
+    .qp-cite{margin-top:26px;border:1px solid var(--qp-line);border-radius:14px;padding:26px 30px 24px;
+    background:linear-gradient(180deg,rgba(111,216,197,.035),rgba(111,216,197,.012))}
+    .qp-cite-grid{display:flex;margin:20px 0 4px;flex-wrap:wrap}
+    .qp-cite-grid div{flex:1;min-width:200px;padding:2px 26px;border-left:1px solid var(--qp-line)}
+    .qp-cite-grid div:first-child{border-left:0;padding-left:0}
+    .qp-cite-grid b{display:block;font-family:Georgia,"Songti SC",serif;font-size:26px;font-weight:500;color:#9ee8da}
+    .qp-cite-grid span{display:block;font-size:12px;color:var(--qp-faint);margin-top:6px;line-height:1.7}
+    .qp-cite-ref{font-size:12.5px;color:#7f948a;line-height:1.9;margin-top:16px}
+    .qp-cite-ref a{color:#6fd8c5;text-decoration:none}
+    </style>
+    <div class="qp-cite">
+      <div class="qp-kicker">学术验证 · 不是概念设想</div>
+      <h2 style="font-family:var(--qp-serif);font-size:clamp(19px,2vw,24px);font-weight:700;color:#e9f1ec;line-height:1.5;margin:12px 0 10px">
+      这条路径，已在真实桥梁上被走通过</h2>
+      <p style="color:var(--qp-muted);font-size:13.5px;line-height:2;max-width:820px;margin:0">
+      Nature Portfolio 旗下《Communications Engineering》（2022）发表的车载数据桥梁监测研究，用三组真实实验验证了
+      「单次穿越噪声淹没信号、多次穿越聚合让桥梁模态浮现」的完整逻辑——与黔脉的融合思路同源。
+      <b style="color:#dfe7e2">黔脉的定位不是发明手机测桥，而是把这个已被验证的物理可行性，转化为贵州三万座桥的省级筛查系统。</b></p>
+      <div class="qp-cite-grid">
+        <div><b>102 次</b><span>金门大桥受控 iPhone 穿越<br/>恢复前三阶模态，部分误差 &lt;0.5%</span></div>
+        <div><b>72 / 37</b><span>Uber 司机真实运营穿越次数 / 车型数<br/>非实验车队，就是日常交通流</span></div>
+        <div><b>280 组</b><span>意大利 28 米短跨公路桥<br/>约 100 组数据即达 &lt;6% 模态误差</span></div>
+      </div>
+      <div class="qp-cite-ref">Matarazzo, T. J. et al. <i>Crowdsourcing bridge dynamic monitoring with smartphone vehicle trips.</i>
+      <a href="https://www.nature.com/articles/s44172-022-00025-4" target="_blank">Communications Engineering 3, 22 (2022) ↗</a>
+      &nbsp;·&nbsp; 后续工作 <a href="https://www.nature.com/articles/s44172-024-00243-y" target="_blank">Communications Engineering (2024) ↗</a></div>
+    </div>
+    ''', unsafe_allow_html=True)
+
     # ---- 互动演示：从 1 条轨迹拖到 1,000 条，看噪声坍缩成桥梁脉搏 ----
     TRUE_FREQ = 7.8
     MILESTONES = (1, 2, 3, 5, 10, 20, 30, 50, 100, 200, 300, 500, 700, 1000)
@@ -1479,8 +1511,17 @@ def render_sources():
          "/Physical_Validation", "真实数据"),
         ("模拟演示数据", "离线可重复的模拟网络数据，用于展示多次过桥融合与优先检查逻辑，不代表真实运营网络。",
          "/?view=method", "模拟演示"),
+        ("Crowdsourcing bridge dynamic monitoring with smartphone vehicle trips",
+         "Matarazzo, T. J. et al. · Communications Engineering（Nature Portfolio，2022）。金门大桥 102 次受控 iPhone 穿越、"
+         "Uber 真实运营 72 次穿越（37 种车型）、意大利短跨桥 280 组数据——验证车载数据聚合可恢复桥梁模态频率，"
+         "是黔脉融合思路的物理可行性背书。",
+         "https://www.nature.com/articles/s44172-022-00025-4", "学术文献"),
+        ("Bridging the Gap: commodifying infrastructure spatial dynamics with crowdsourced smartphone data",
+         "Communications Engineering（Nature Portfolio，2024）。同一路线的后续研究，继续使用金门大桥等多座桥梁数据，"
+         "表明车载众包感知是一条持续发展的研究方向。",
+         "https://www.nature.com/articles/s44172-024-00243-y", "学术文献"),
     ]
-    badge_cls = {"官方来源": "sim", "真实数据": "real", "模拟演示": "sim"}
+    badge_cls = {"官方来源": "sim", "真实数据": "real", "模拟演示": "sim", "学术文献": "real"}
     parts = [
         f'<div class="src-row"><div><div class="src-name">{name}</div>'
         f'<div class="src-note">{desc}</div>'
@@ -1503,7 +1544,9 @@ def render_sources():
     st.markdown(
         '<div class="qp-note" style="margin-top:48px;border-top:1px solid #1f342b;padding-top:16px">'
         '方法边界：黔脉只筛查桥梁相对自身历史基线的持续动态响应变化，不进行损伤类型识别、裂缝诊断或安全等级判断，'
-        '也不能替代专业桥梁检测；输出仅为"建议优先工程检查"。</div>',
+        '也不能替代专业桥梁检测；输出仅为"建议优先工程检查"。<br/>'
+        '学术定位：车载数据恢复桥梁模态的物理可行性已由 Communications Engineering（2022）等文献在真实桥梁上验证；'
+        '黔脉的贡献是将该原理工程化为面向贵州三万余座桥的省级筛查系统——文献负责"可行"，黔脉负责"可用"。</div>',
         unsafe_allow_html=True,
     )
 
