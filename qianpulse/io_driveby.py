@@ -17,9 +17,11 @@ from .io_sensorlogger import _find_column, _time_values
 
 
 def _load_member_csv(archive, names, member):
-    """按不区分大小写的文件名从 ZIP 里读一个 CSV 成员。"""
+    """按不区分大小写的文件名从 ZIP 里读一个 CSV 成员（空文件返回 None）。"""
     key = names.get(member.lower())
     if not key:
+        return None
+    if archive.getinfo(key).file_size == 0:
         return None
     with archive.open(key) as handle:
         return pd.read_csv(handle)

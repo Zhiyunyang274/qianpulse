@@ -2,8 +2,12 @@
 
 数据目录 data/drive_by_pilot/ 下每个 ZIP 是一次完整行车记录；
 无数据时页面自动回退到「计划中」状态，绝不展示伪造结果。
-当前数据为 SIMULATED DRIVE-BY（模拟采集演练），页面全程显式标注，
-不冒充真实外场测量。
+
+当前目录同时包含：
+- 真实外场采集（a*.zip 正向 / b*.zip 反向，iPhone 15 · 100 Hz，无桥窗标注
+  → 按「全程窗口」处理），页面标注 REAL FIELD DATA；
+- 模拟采集演练（sim_drive_*.zip，带 manifest）→ SIMULATED，作为管线验证。
+两类数据分层展示，不混淆。
 """
 
 from pathlib import Path
@@ -50,33 +54,52 @@ def _render_scheduled():
     )
 
 
-def _render_runs(runs):
+def _direction_label(source):
+    """按文件名前缀给出行驶方向（a=正向去程 / b=反向回程）。"""
+    name = Path(source).name.lower()
+    if name.startswith("a"):
+        return "正向 · 去程"
+    if name.startswith("b"):
+        return "反向 · 回程"
+    return ""
+
+
+def _render_runs(runs, simulated):
+    """渲染一组穿越记录。simulated=True 渲染模拟演练（管线验证），False 渲染真实外场采集。"""
     badge = ('<span class="qp-badge sim">SIMULATED DRIVE-BY DATA · 模拟采集演练</span>'
-             if any(r["simulated"] for r in runs)
-             else '<span class="qp-badge real">REAL FIELD DATA</span>')
+             if simulated else '<span class="qp-badge real">REAL FIELD DATA · 真实开车采集</span>')
     page_head("证据 03 · 车载实测", "车载过桥试点 · 数据已接入",
               "同一车辆、同一路线、同一座桥——把每一次过桥变成一次测量。",
               badge)
 
+    n = len(runs)
+    has_window = all(r["window"] is not None for r in runs)
+    if simulated:
+        method_note = (
+            '驾驶员使用日常车辆多次通过目标桥梁，手机固定于车内并以约 100 Hz 记录 IMU 与 GPS；'
+            'Bridge-Enter / Bridge-Exit 标注切出桥窗，重力投影提取竖直向加速度，'
+            '对每次穿越做功率谱候选峰，再多票融合得到桥梁脉搏。'
+            '<b style="color:#e3c584">本组三条记录为模拟采集演练数据（iPhone 传感器格式，数据集标注桥频 7.78 Hz），'
+            '用于验证整条数据管线；不是真实外场测量。</b>')
+    else:
+        method_note = (
+            '驾驶员使用日常车辆对同一座平桥完成 {} 次真实穿越（正向 {} 次 / 反向 {} 次），'
+            '手机固定于车内以约 100 Hz 记录 IMU。本组采集未做桥窗标注、未开 GPS——'
+            '系统按「全程窗口」处理：把整段行车记录当作一次穿越提取候选峰，'
+            '引道路段的噪声候选随穿越轮换，只有桥梁响应会堆积。'
+            '竖直向加速度由重力投影得到。'.format(n, sum(1 for r in runs if _direction_label(r["source"]) == "正向 · 去程"),
+                                                   n - sum(1 for r in runs if _direction_label(r["source"]) == "正向 · 去程")))
     st.markdown(
         '<div class="qp-card" style="margin-top:24px;padding:24px 28px">'
         '<div class="qp-kicker">采集方案与真实边界</div>'
-        '<p class="qp-note" style="max-width:860px;margin-top:10px">'
-        '驾驶员使用日常车辆多次通过目标桥梁，手机固定于车内并以约 100 Hz 记录 IMU 与 GPS；'
-        'Bridge-Enter / Bridge-Exit 标注切出桥窗，重力投影提取竖直向加速度，'
-        '对每次穿越做功率谱候选峰，再多票融合得到桥梁脉搏。'
-        + ('<b style="color:#e3c584">当前接入的三条记录为模拟采集演练数据（iPhone 传感器格式，数据集标注桥频 7.78 Hz），'
-           '用于验证整条数据管线；不是真实外场测量，正式外场采集后将原样替换。</b>'
-           if any(r["simulated"] for r in runs) else '') +
-        '</p></div>',
+        '<p class="qp-note" style="max-width:860px;margin-top:10px">' + method_note + '</p></div>',
         unsafe_allow_html=True,
     )
 
     # ---- 指标行 ----
-    n = len(runs)
     fs_med = float(np.median([r["fs"] for r in runs]))
     dur_med = float(np.median([r["duration"] for r in runs]))
-    votes = [crossing_to_peaks(r["bridge"])["peaks"] for r in runs]
+    votes = [crossing_to_peaks(r["bridge"] if r["bridge"] is not None else r["full"])["peaks"] for r in runs]
     all_votes = np.concatenate(votes)
     grid, density, dominant = fuse_peaks(all_votes)
     c1, c2, c3, c4 = st.columns(4)
@@ -100,32 +123,36 @@ def _render_runs(runs):
     st.markdown(
         '<div class="qp-section-label" style="margin-top:44px">逐次穿越 · 竖直向加速度</div>'
         '<div class="qp-section-title">每一次过桥，都是一次独立测量</div>'
-        '<div class="qp-section-copy">下图为重力投影竖直向加速度全程波形；阴影区为 GPS/标注切出的桥窗。'
-        '桥上振动肉眼可见地强于引道路段。</div>',
+        '<div class="qp-section-copy">下图为重力投影竖直向加速度全程波形' +
+        ('；阴影区为标注切出的桥窗，桥上振动肉眼可见地强于引道路段。' if has_window
+         else '。本组采集无桥窗标注，整段记录按一次穿越处理。') + '</div>',
         unsafe_allow_html=True,
     )
     for r in runs:
-        enter, exit_ = r["window"]
         fig = go.Figure()
         fig.add_trace(go.Scatter(x=r["full"]["t"], y=r["full"]["acc"], mode="lines",
                                  line=dict(color=CHART_COLORS["base"], width=1),
                                  name="竖直向加速度（g）", hovertemplate="%{x:.1f}s · %{y:.4f}g<extra></extra>"))
-        fig.add_vrect(x0=enter, x1=exit_, fillcolor=CHART_COLORS["current"], opacity=.10,
-                     line_width=0, annotation_text="桥窗 {:.1f}s–{:.1f}s".format(enter, exit_),
-                     annotation_font=dict(size=10, color=CHART_COLORS["current"]))
+        if r["window"] is not None:
+            enter, exit_ = r["window"]
+            fig.add_vrect(x0=enter, x1=exit_, fillcolor=CHART_COLORS["current"], opacity=.10,
+                         line_width=0, annotation_text="桥窗 {:.1f}s–{:.1f}s".format(enter, exit_),
+                         annotation_font=dict(size=10, color=CHART_COLORS["current"]))
         fig.update_layout(plotly_theme(height=210, show_y=False))
         fig.update_xaxes(title_text="行车时间（s）")
+        direction = _direction_label(r["source"])
+        dir_chip = ' · <b style="color:#6fd8c5">{}</b>'.format(direction) if direction else ""
         st.markdown(
-            '<div class="qp-note" style="margin:6px 0 2px"><b>{}</b> · {} · {} · {:.2f} km 路线</div>'.format(
-                r["source"], r["vertical_method"],
+            '<div class="qp-note" style="margin:6px 0 2px"><b>{}</b>{} · {} · {:.2f} km 路线</div>'.format(
+                r["source"], dir_chip,
                 "模拟数据" if r["simulated"] else "真实数据", r["route_km"]),
             unsafe_allow_html=True)
         show_chart(fig)
 
     # ---- 候选峰投票 + 融合 ----
     st.markdown(
-        '<div class="qp-section-label" style="margin-top:44px">候选峰投票 · 三次穿越</div>'
-        '<div class="qp-section-title">单次各不相同，三次之后，属于桥的频率开始堆积</div>'
+        '<div class="qp-section-label" style="margin-top:44px">候选峰投票 · {} 次穿越</div>'.format(n)
+        + '<div class="qp-section-title">单次各不相同，多次之后，属于桥的频率开始堆积</div>'
         '<div class="qp-section-copy">每次穿越的功率谱前若干候选峰各投一票（等权）：车辆与路面噪声的候选每次都换位置，'
         '只有桥梁自身的响应会在同一频率反复出现。灰色短线为各次穿越的原始候选，'
         '青色曲线为 KDE 融合密度（绝对带宽 0.15 Hz）。</div>',
@@ -176,7 +203,7 @@ def _render_runs(runs):
     st.markdown(
         '<div class="qp-note" style="border-top:1px solid #1f342b;padding-top:16px;margin-top:34px">'
         '数据来源：data/drive_by_pilot/ · ' +
-        ("SIMULATED DRIVE-BY（模拟采集演练，iPhone 传感器格式）· " if any(r["simulated"] for r in runs) else "") +
+        ("SIMULATED DRIVE-BY（模拟采集演练，iPhone 传感器格式）· " if simulated else "") +
         '竖直向方法：{}。筛查结果不构成结构诊断。</div>'.format(
             " / ".join(sorted({r["vertical_method"] for r in runs}))),
         unsafe_allow_html=True,
@@ -189,14 +216,27 @@ if _has_data:
         return [load_driveby_run(Path(p)) for p in paths_str]
 
     try:
-        _runs = [r for r in _load_runs(tuple(str(p) for p in _paths)) if r["bridge"] is not None]
+        _all = _load_runs(tuple(str(p) for p in _paths))
     except (ValueError, KeyError, OSError) as exc:
         st.error(f"车载数据解析失败：{exc}")
-        st.info("请检查 data/drive_by_pilot/ 下的 ZIP 是否完整（需含 Accelerometer.csv 与 Annotation.csv）。")
+        st.info("请检查 data/drive_by_pilot/ 下的 ZIP 是否完整（需含 Accelerometer.csv）。")
         st.stop()
-    if not _runs:
-        st.error("data/drive_by_pilot/ 下的 ZIP 均缺少有效桥窗标注（BRIDGE_ENTER / BRIDGE_EXIT），无法分析。")
-        st.stop()
-    _render_runs(_runs)
+
+    _real = [r for r in _all if not r["simulated"]]
+    _sim = [r for r in _all if r["simulated"]]
+
+    if _real:
+        _render_runs(_real, simulated=False)
+    if _sim:
+        if _real:
+            st.markdown(
+                '<div class="qp-note" style="margin-top:56px;border-top:1px dashed #1f342b;padding-top:28px">'
+                '以下为<b>模拟采集演练数据</b>（管线验证）：在真实外场数据接入前用于验证 ZIP → 桥窗 → '
+                '候选峰 → 融合的完整链路，保留作对照。</div>',
+                unsafe_allow_html=True,
+            )
+        _render_runs(_sim, simulated=True)
+    if not _real and not _sim:
+        _render_scheduled()
 else:
     _render_scheduled()
