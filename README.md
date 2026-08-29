@@ -16,6 +16,10 @@
 </p>
 
 <p align="center">
+  <img src="https://img.shields.io/badge/Tag-%23Guikesong-9146FF" alt="#Guikesong"/>
+</p>
+
+<p align="center">
   <img src="https://img.shields.io/badge/Python-3.9%2B-3776AB" alt="Python"/>
   <img src="https://img.shields.io/badge/tests-17%20passed-brightgreen" alt="tests"/>
   <img src="https://img.shields.io/badge/License-MIT-black" alt="License"/>
