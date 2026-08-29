@@ -1,0 +1,17 @@
+[Unit]
+Description=QianPulse Streamlit (qianpulse.caixuntong.cn)
+After=network.target
+
+[Service]
+Type=simple
+User=www-data
+Group=www-data
+WorkingDirectory=/opt/qianpulse
+ExecStart=/opt/qianpulse/.venv/bin/python -m streamlit run app.py --server.port 8501 --server.address 127.0.0.1
+Restart=always
+RestartSec=5
+# 2G 内存机器：限制单实例内存，超限自动重启兜底
+MemoryMax=1500M
+
+[Install]
+WantedBy=multi-user.target

@@ -1,14 +1,18 @@
 [theme]
-base = "light"
-primaryColor = "#9B3D34"
-backgroundColor = "#F1EFE8"
-secondaryBackgroundColor = "#E8E5DC"
-textColor = "#202824"
+base = "dark"
+primaryColor = "#6fd8c5"
+backgroundColor = "#0a1310"
+secondaryBackgroundColor = "#142620"
+textColor = "#e9f1ec"
 font = "sans serif"
-
-[browser]
-gatherUsageStats = false
 
 [server]
 headless = true
-address = "localhost"
+address = "0.0.0.0"
+enableCORS = false
+enableXsrfProtection = true
+
+# 子域名反代（qianpulse.caixuntong.cn）必需：静态资源/WS 路径按此前缀生成。
+# 本地开发（localhost:8501）不受影响——本地直连时浏览器直接用访问地址。
+[browser]
+gatherUsageStats = false

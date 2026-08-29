@@ -56,7 +56,35 @@ def crossing_to_peaks(crossing, band=(3.0, 15.0), top_k=5):
             "processed": processed, "quality": quality}
 
 
-def fuse_crossings(crossings, band=(3.0, 15.0), top_k=5, grid_points=800, bandwidth=0.10):
+def fuse_peaks(all_peaks, band=(3.0, 15.0), grid_points=800, bandwidth=0.15):
+    """把一组候选峰融合成脉搏密度曲线（fuse_crossings 的无信号版本）。
+
+    每个候选峰投一票（等权）：车辆噪声的候选散布全带，只有真正属于
+    桥梁的响应会在同一频率反复出现——票数随穿越次数堆积，噪声不堆积。
+    bandwidth 为绝对带宽（Hz），与数据分布无关。
+    """
+    all_peaks = np.asarray(all_peaks, dtype=float)
+    grid = np.linspace(band[0], band[1], grid_points)
+    if len(all_peaks) == 0:
+        return grid, np.zeros_like(grid), np.nan
+    if len(all_peaks) >= 2 and np.ptp(all_peaks) > 1e-9:
+        spread = float(np.std(all_peaks))
+        bw_factor = max(bandwidth / spread, 1e-3)
+        try:
+            density = gaussian_kde(all_peaks, bw_method=bw_factor)(grid)
+        except (np.linalg.LinAlgError, ValueError):
+            density = np.zeros_like(grid)
+        if not np.any(density):
+            density = np.sum(np.exp(-0.5 * ((grid[:, None] - all_peaks) / bandwidth) ** 2), axis=1)
+        dominant = float(grid[np.argmax(density)])
+    else:
+        density = np.exp(-0.5 * ((grid - all_peaks[0]) / bandwidth) ** 2)
+        dominant = float(all_peaks[0])
+    return grid, density, dominant
+
+
+def fuse_crossings(crossings, band=(3.0, 15.0), top_k=5, grid_points=800, bandwidth=0.15):
+    """把多次穿越的候选峰融合成一条脉搏密度曲线。"""
     all_peaks, all_scores, crossing_results = [], [], []
     for crossing in crossings:
         result = crossing_to_peaks(crossing, band=band, top_k=top_k)
@@ -64,24 +92,7 @@ def fuse_crossings(crossings, band=(3.0, 15.0), top_k=5, grid_points=800, bandwi
         all_peaks.extend(result["peaks"].tolist())
         all_scores.extend(result["peak_scores"].tolist())
     all_peaks, all_scores = np.asarray(all_peaks, dtype=float), np.asarray(all_scores, dtype=float)
-    grid = np.linspace(band[0], band[1], grid_points)
-    if len(all_peaks) == 0:
-        density, dominant = np.zeros_like(grid), np.nan
-    elif len(all_peaks) >= 2 and np.ptp(all_peaks) > 1e-9:
-        weights = np.maximum(all_scores, np.finfo(float).eps)
-        weights /= weights.sum()
-        try:
-            density = gaussian_kde(all_peaks, bw_method=bandwidth, weights=weights)(grid)
-        except (np.linalg.LinAlgError, ValueError):
-            density = np.zeros_like(grid)
-        if not np.any(density):
-            sigma = max((band[1] - band[0]) / 80.0, 0.08)
-            density = np.sum(np.exp(-0.5 * ((grid[:, None] - all_peaks) / sigma) ** 2), axis=1)
-        dominant = float(grid[np.argmax(density)])
-    else:
-        sigma = max((band[1] - band[0]) / 80.0, 0.08)
-        density = np.exp(-0.5 * ((grid - all_peaks[0]) / sigma) ** 2)
-        dominant = float(all_peaks[0])
+    grid, density, dominant = fuse_peaks(all_peaks, band=band, grid_points=grid_points, bandwidth=bandwidth)
     fingerprint = density / np.max(density) if np.max(density) > 0 else density
     concentration = float(np.mean(np.abs(all_peaks - dominant) <= 0.25)) if len(all_peaks) and np.isfinite(dominant) else 0.0
     stability = float(np.clip(concentration * (1.0 - 1.0 / np.sqrt(max(len(crossings), 1))), 0.0, 1.0))
@@ -95,6 +106,19 @@ def fingerprint_divergence(fp_a, fp_b, eps=1e-12):
     a, b = np.asarray(fp_a, dtype=float) + eps, np.asarray(fp_b, dtype=float) + eps
     a, b = a / a.sum(), b / b.sum()
     return float(jensenshannon(a, b, base=2.0) ** 2)
+
+
+def noise_residual(fingerprint, threshold=0.3):
+    """脉搏中最强次峰相对主峰的高度：1 表示完全模糊，0 表示干净收敛。"""
+    fp = np.asarray(fingerprint, dtype=float)
+    if len(fp) < 3:
+        return 0.0
+    peaks = [fp[i] for i in range(1, len(fp) - 1)
+             if fp[i] > fp[i - 1] and fp[i] >= fp[i + 1] and fp[i] > threshold]
+    if len(peaks) < 2:
+        return 0.0
+    peaks.sort(reverse=True)
+    return float(peaks[1] / peaks[0])
 
 
 def bootstrap_baseline_divergence(crossings, n_iter=40, sample_frac=0.55, seed=123):
