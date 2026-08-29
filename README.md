@@ -49,6 +49,19 @@
 - **多车成脉**：千百次穿越统计融合后，属于桥的响应自然显现——噪声互相抵消，桥梁主频浮出水面；
 - **偏移可见**：当前脉搏与历史基线的持续偏移，用 Jensen–Shannon 散度量化，直接回答「有限的检查资源，先投向哪座桥」。
 
+## 界面一览
+
+<p align="center">
+  <img src="docs/screenshots/map_overview.png" alt="感知网络总览" width="880"/>
+</p>
+<p align="center"><sub><b>总览 · 感知网络地图</b> —— 128 座桥梁在线：11 座响应偏移（红）/ 21 座持续观察（金）/ 96 座状态稳定（青），路网光脉与车流动画实时呈现</sub></p>
+
+| | |
+|:---:|:---:|
+| <img src="docs/screenshots/intro_reveal.png" width="420"/><br><sub><b>六步电影式叙事</b> · 从万桥贵州到黔脉 Reveal</sub> | <img src="docs/screenshots/map_focus.png" width="420"/><br><sub><b>地图交互</b> · 点击桥梁查看档案，其余桥自动暗化为背景</sub> |
+| <img src="docs/screenshots/method_chart_0.png" width="420"/><br><sub><b>千次穿越热图</b> · 单车频谱混沌，7.8 Hz 桥梁分量随轨迹堆积成带</sub> | <img src="docs/screenshots/method_chart_1.png" width="420"/><br><sub><b>融合脉搏</b> · 候选峰等权投票后，桥梁主频压倒性浮现</sub> |
+| <img src="docs/screenshots/bridge_detail.png" width="420"/><br><sub><b>桥梁详情</b> · 偏移证据链：状态 → 原因 → 下一步</sub> | <img src="docs/screenshots/evidence.png" width="420"/><br><sub><b>真实证据</b> · 模拟 / 真实 / 车载数据显式分层标注</sub> |
+
 ## 问题形式化
 
 桥梁竖向加速度响应的提取，在单车视角下是一个**病态反问题**（ill-posed inverse problem）：车载 IMU 记录的是「结构响应 × 传递路径 × 车辆动力学」三重卷积的混叠——悬架（~1.7 Hz）、车身（~2.7 Hz）、发动机（~19.6 Hz）谐波与路面宽带激励全部叠加上桥跨模态（3–15 Hz）之上，且传递路径随每次过桥的车道、车速、车辆参数而变。单次穿越的频谱不存在一致的逆解。
@@ -81,9 +94,19 @@ flowchart LR
 
 **偏移度量** · 基线指纹与当前指纹的比较使用 Jensen–Shannon 散度（base-2，比特）。选 JS 而非 KL 散度有三重理由：JS 对称（偏移无方向先验）、有界（[0,1]，跨桥可比）、其平方根满足三角不等式——是 f-散度家族中唯一诱导真度量的成员，赋予偏移量「距离」的物理解释。
 
+<p align="center">
+  <img src="docs/screenshots/method_chart_3.png" width="560" alt="历史基线与当前脉搏的指纹偏移"/>
+</p>
+<p align="center"><sub>历史基线（绿）与当前脉搏（红）的指纹偏移 —— JS 散度 0.192，远超自举阈值 0.042</sub></p>
+
 **阈值推断** · 告警阈值不靠人工标定，而由**基线内部自举**（bootstrap）非参数推断：对基线穿越做 40 次无放回 55% 二次抽样，计算成对指纹散度分布，取 95% 分位。含义是——只有当当前脉搏偏离基线的程度超过「基线自身随机波动」的合理范围时才告警，把假阳性率控制在一个由数据决定的水平上，不引入任何主观常数。
 
 **收敛保证** · 融合稳定性按 $s_n = c_n \cdot (1 - 1/\sqrt{n})$ 构造，其中 $c_n$ 为落在主导频率 ±0.25 Hz 内的候选比例——显式编码了中心极限定理的 $O(1/\sqrt{n})$ 收敛速率：穿越次数翻四倍，估计噪声减半。工作原理页的千次轨迹演示（里程碑滑杆 1 → 3 → 10 → 30 → 100 → 300 → 1000）实测复现了该速率：融合主频收敛于 **7.81 Hz**，次峰噪声残差衰减至 **0%**。
+
+<p align="center">
+  <img src="docs/screenshots/method_chart_2.png" width="560" alt="噪声残差收敛轨迹"/>
+</p>
+<p align="center"><sub>噪声残差随轨迹数 N 的坍缩轨迹 —— 与 O(1/√N) 收敛速率一致</sub></p>
 
 ### 关键设计决策一览
 
