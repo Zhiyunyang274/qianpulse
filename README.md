@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="assets/intro/reveal.jpg" alt="黔脉 QianPulse" width="880"/>
+  <img src="assets/intro/cover.png" alt="黔脉 QianPulse" width="880"/>
 </p>
 
 <h1 align="center">黔脉 · QianPulse</h1>
