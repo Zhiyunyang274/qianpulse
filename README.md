@@ -26,7 +26,7 @@
 <p align="center">
   <img src="https://img.shields.io/badge/Python-3.9%2B-3776AB" alt="Python"/>
   <img src="https://img.shields.io/badge/tests-17%20passed-brightgreen" alt="tests"/>
-  <img src="https://img.shields.io/badge/License-MIT-black" alt="License"/>
+  <img src="https://img.shields.io/badge/License-AGPL--3.0-black" alt="License"/>
   <img src="https://img.shields.io/badge/Streamlit-Console-FF4B4B" alt="Streamlit"/>
 </p>
 
@@ -271,7 +271,9 @@ qianpulse_starter/
 
 ## 许可
 
-[MIT](LICENSE)
+**AGPL-3.0 + 双许可**。本项目以 [GNU AGPL-3.0](LICENSE) 发布：您可以自由学习、修改与自部署，但任何基于本项目的网络服务必须同样开源其完整修改；若需闭源商用（产品集成、私有化交付等），需另行获取商业授权，请联系作者洽谈。
+
+> 版权人不受 AGPL 约束，保留一切商业授权与闭源分发权利。
 
 ## 致谢
 
