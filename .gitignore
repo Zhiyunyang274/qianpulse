@@ -11,3 +11,19 @@ outputs/*
 *.db
 .claude/
 .trae/
+docs/internal_params.md
+docs/patent_disclosure.md
+docs/software_copyright.md
+docs/软著源代码*.pdf
+docs/软著说明书*.pdf
+docs/make_copyright_pdf.py
+docs/make_manual_pdf.py
+# 商业计划书系列（含联系方式与商业策略，不随 AGPL 仓库公开）
+docs/bp.html
+docs/make_bp_pdf.py
+docs/黔脉商业计划书.pdf
+docs/pitch.html
+docs/pitch_standalone.html
+docs/pitch_script.md
+docs/*.pptx
+docs/黔脉路演/
